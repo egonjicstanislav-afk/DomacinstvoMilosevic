@@ -589,7 +589,7 @@ async function sendOrderNotification(order) {
 
     await fetch('https://jqrfokkkbrgbtesqscwh.supabase.co/functions/v1/send-notification', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_KEY}` },
       body: JSON.stringify({
         to: emails,
         subject: `🌿 Nova narudžbina ${order.id} — ${customer.name || ''}`,
