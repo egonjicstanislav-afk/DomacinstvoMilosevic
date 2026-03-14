@@ -309,7 +309,8 @@
           <input type="text" class="search-admin" id="invSearch" placeholder="🔍 Pretraži artikle..." oninput="renderInventory()">
           <select id="invCatFilter" onchange="renderInventory()" style="background:var(--forest-mid);border:1px solid var(--forest-light);border-left:2px solid var(--green);color:var(--white);padding:10px 14px;font-size:14px;outline:none;font-family:'Source Sans 3',sans-serif;border-radius:0 4px 4px 0;">
             <option value="">Sve kategorije</option>
-            <option>Jaja i mlečni</option>
+            <option>Jaja</option>
+            <option>Mlečni proizvodi</option>
             <option>Med i pčelinj.</option>
             <option>Voće i povrće</option>
             <option>Prerađevine</option>
@@ -416,7 +417,8 @@
       <div class="form-group">
         <label>Kategorija *</label>
         <select class="form-control-a" id="pCat" onchange="updateCardPreview(currentImageUrl)">
-          <option>Jaja i mlečni</option>
+          <option>Jaja</option>
+          <option>Mlečni proizvodi</option>
           <option>Med i pčelinj.</option>
           <option>Voće i povrće</option>
           <option>Prerađevine</option>
@@ -784,7 +786,7 @@ async function renderSezonski() {
     byCategory[p.category].push(p);
   });
 
-  const CAT_ICONS = { 'Jaja i mlečni': '🥛', 'Med i pčelinj.': '🍯', 'Voće i povrće': '🌽', 'Prerađevine': '🫙' };
+  const CAT_ICONS = { 'Jaja': '🥚', 'Mlečni proizvodi': '🥛', 'Med i pčelinj.': '🍯', 'Voće i povrće': '🌽', 'Prerađevine': '🫙' };
 
   document.getElementById('sezonskiBody').innerHTML = Object.entries(byCategory).map(([cat, products]) => {
     const activeCount = products.filter(p => p.active).length;

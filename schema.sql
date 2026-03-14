@@ -90,10 +90,10 @@ on conflict (key) do nothing;
 -- DEMO ARTIKLI (opciono — obriši ako ne trebaš)
 -- =============================================
 insert into products (id, name, category, price, unit, stock, description, active) values
-  ('p1',  'Jaja (10 kom)',              'Jaja i mlečni', 180,  'pak',  30, 'Sveža domaća jaja, slobodan uzgoj.',                    true),
-  ('p2',  'Mleko sveže (1L)',           'Jaja i mlečni', 120,  'lit',  20, 'Punomasno kravlje mleko, jutarnja muža.',               true),
-  ('p3',  'Kajmak (250g)',              'Jaja i mlečni', 450,  'pak',  15, 'Domaći kajmak, blago slan.',                            true),
-  ('p4',  'Sir beli (500g)',            'Jaja i mlečni', 650,  'pak',  10, 'Domaći meki beli sir u salamuri.',                     true),
+  ('p1',  'Jaja (10 kom)',              'Jaja',           180,  'pak',  30, 'Sveža domaća jaja, slobodan uzgoj.',                    true),
+  ('p2',  'Mleko sveže (1L)',           'Mlečni proizvodi', 120, 'lit', 20, 'Punomasno kravlje mleko, jutarnja muža.',              true),
+  ('p3',  'Kajmak (250g)',              'Mlečni proizvodi', 450, 'pak', 15, 'Domaći kajmak, blago slan.',                           true),
+  ('p4',  'Sir beli (500g)',            'Mlečni proizvodi', 650, 'pak', 10, 'Domaći meki beli sir u salamuri.',                    true),
   ('p5',  'Med livadski (500g)',        'Med i pčelinj.', 1200, 'teg',  20, 'Čist livadski med, sakupljen u junu.',                  true),
   ('p6',  'Med od bagrema (500g)',      'Med i pčelinj.', 1400, 'teg',  12, 'Svetli bagremov med, blag i aromatičan.',              true),
   ('p7',  'Paradajz (1kg)',             'Voće i povrće',  120,  'kg',   40, 'Domaći paradajz, sazreo na suncu.',                    true),
