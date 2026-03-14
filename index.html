@@ -551,6 +551,7 @@ async function placeOrder() {
     btn.disabled = false; btn.textContent = 'Naruči →'; return;
   }
 
+  sendOrderNotification(order); // async, ne čekamo — narudžbina je već sačuvana
   cart = []; saveCart(); updateCartUI();
   toggleCart();
   document.getElementById('modalOrderId').textContent = orderId;
@@ -567,6 +568,40 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateCartUI();
   trackVisit();
 });
+
+async function sendOrderNotification(order) {
+  try {
+    const { data: keyData } = await db.from('settings').select('value').eq('key', 'resend_api_key').single();
+    const apiKey = keyData?.value || '';
+    if (!apiKey) return;
+
+    const { data: emailData } = await db.from('settings').select('value').eq('key', 'notification_emails').single();
+    const emails = (emailData?.value || '').split(',').map(e => e.trim()).filter(Boolean);
+    if (emails.length === 0) return;
+
+    const customer = order.customer || {};
+    const delivery = order.delivery || {};
+    const itemsHtml = (order.items || []).map(i =>
+      `<tr><td style="padding:6px 12px;border-bottom:1px solid #2a3a18">${i.name}</td><td style="padding:6px 12px;border-bottom:1px solid #2a3a18;text-align:center">${i.qty} ${i.unit}</td><td style="padding:6px 12px;border-bottom:1px solid #2a3a18;text-align:right;color:#c8860a;font-weight:600">${(i.qty * i.price).toLocaleString('sr')} RSD</td></tr>`
+    ).join('');
+    const deliveryLine = delivery.type === 'preuzimanje'
+      ? '🏡 Preuzimanje na farmi'
+      : `🚐 Dostava → ${customer.address || ''}, ${customer.village || ''}`;
+
+    const html = `<div style="font-family:Georgia,serif;background:#0f1a08;padding:32px;max-width:560px;margin:0 auto;border:2px solid #5a8c1e;border-radius:8px"><div style="text-align:center;margin-bottom:24px"><div style="font-size:36px">🌿</div><div style="font-size:22px;font-weight:700;color:#f0ead0">Farma Milošević</div><div style="font-size:13px;color:#7a7860;letter-spacing:2px;text-transform:uppercase">Nova narudžbina</div></div><div style="background:#172210;border-left:4px solid #c8860a;padding:16px 20px;margin-bottom:20px;border-radius:0 4px 4px 0"><div style="font-size:11px;color:#7a7860;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">Broj narudžbine</div><div style="font-size:24px;font-weight:700;color:#c8860a;letter-spacing:3px">${order.id}</div></div><table style="width:100%;border-collapse:collapse;margin-bottom:20px"><tr><td style="padding:8px 0;font-size:12px;color:#7a7860;text-transform:uppercase;letter-spacing:1px;width:36%">Kupac</td><td style="padding:8px 0;color:#f0ead0;font-weight:600">${customer.name || ''}</td></tr><tr><td style="padding:8px 0;font-size:12px;color:#7a7860;text-transform:uppercase;letter-spacing:1px">Telefon</td><td style="padding:8px 0;color:#f0ead0">${customer.phone || ''}</td></tr><tr><td style="padding:8px 0;font-size:12px;color:#7a7860;text-transform:uppercase;letter-spacing:1px">Dostava</td><td style="padding:8px 0;color:#f0ead0">${deliveryLine}</td></tr><tr><td style="padding:8px 0;font-size:12px;color:#7a7860;text-transform:uppercase;letter-spacing:1px">Termin</td><td style="padding:8px 0;color:#f0ead0">📅 ${delivery.date || ''} · ${delivery.slotLabel || ''}</td></tr>${customer.note ? `<tr><td style="padding:8px 0;font-size:12px;color:#7a7860;text-transform:uppercase;letter-spacing:1px">Napomena</td><td style="padding:8px 0;color:#f0ead0">${customer.note}</td></tr>` : ''}</table><div style="font-size:12px;color:#7a7860;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Artikli</div><table style="width:100%;border-collapse:collapse;background:#172210;border-radius:4px;overflow:hidden;margin-bottom:20px"><thead><tr style="background:#0f1a08"><th style="padding:8px 12px;text-align:left;font-size:11px;color:#7a7860">NAZIV</th><th style="padding:8px 12px;text-align:center;font-size:11px;color:#7a7860">KOL.</th><th style="padding:8px 12px;text-align:right;font-size:11px;color:#7a7860">IZNOS</th></tr></thead><tbody>${itemsHtml}</tbody></table><div style="display:flex;justify-content:space-between;align-items:baseline;background:#172210;padding:16px 20px;border-radius:4px;margin-bottom:24px"><span style="font-size:13px;color:#7a7860;text-transform:uppercase;letter-spacing:1px">UKUPNO</span><span style="font-size:26px;font-weight:700;color:#c8860a">${Number(order.total).toLocaleString('sr')} RSD</span></div><div style="text-align:center"><a href="https://egonjicstanislav-afk.github.io/DomacinstvoMilosevic/admin.html" style="background:#5a8c1e;color:#fff;padding:12px 28px;text-decoration:none;font-weight:700;font-size:14px;border-radius:4px;display:inline-block">Otvori admin panel →</a></div><div style="text-align:center;margin-top:20px;font-size:12px;color:#3a4a28">Farma Milošević · Mali Požarevac</div></div>`;
+
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: 'Farma Milošević <onboarding@resend.dev>',
+        to: emails,
+        subject: `🌿 Nova narudžbina ${order.id} — ${customer.name || ''}`,
+        html
+      })
+    });
+  } catch(e) { console.warn('Notifikacija nije poslata:', e); }
+}
 
 async function trackVisit() {
   try {
