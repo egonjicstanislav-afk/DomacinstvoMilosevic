@@ -397,26 +397,17 @@
         <!-- NOTIFIKACIJE -->
         <div style="background:var(--forest-mid);border:1px solid var(--forest-light);border-top:3px solid var(--honey);padding:24px;margin-bottom:20px;border-radius:0 0 4px 4px">
           <h3 style="font-size:16px;font-weight:700;letter-spacing:1px;margin-bottom:6px;color:var(--fog)">📧 MEJL NOTIFIKACIJE</h3>
-          <p style="font-size:13px;color:var(--smoke);margin-bottom:20px">Automatski mejl pri svakoj novoj narudžbini. Koristi <a href="https://resend.com" target="_blank" style="color:var(--honey)">Resend</a> (besplatno do 3000 mejlova/mesec).</p>
+          <p style="font-size:13px;color:var(--smoke);margin-bottom:20px">Mejlovi na koje stižu obaveštenja o novim narudžbinama.</p>
 
-          <div style="margin-bottom:14px">
-            <label style="display:block;font-size:12px;font-weight:600;letter-spacing:1px;color:var(--smoke);margin-bottom:5px;text-transform:uppercase">Resend API Key</label>
-            <div style="display:flex;gap:8px">
-              <input type="password" class="form-control-a" id="resendKey" placeholder="re_xxxxxxxxxxxxxxxxxxxx" style="flex:1">
-              <button class="btn btn-sm" onclick="toggleResendKeyVisibility()" id="resendKeyToggle" style="white-space:nowrap">👁 Prikaži</button>
-            </div>
-            <div style="font-size:12px;color:var(--smoke);margin-top:5px">Naći na <strong style="color:var(--fog)">resend.com → API Keys</strong></div>
-          </div>
-
-          <div style="margin-bottom:14px">
+          <div style="margin-bottom:16px">
             <label style="display:block;font-size:12px;font-weight:600;letter-spacing:1px;color:var(--smoke);margin-bottom:5px;text-transform:uppercase">Mejlovi za obaveštenja</label>
             <input type="text" class="form-control-a" id="notifEmails" placeholder="npr. sasa@gmail.com, sladjana@gmail.com">
             <div style="font-size:12px;color:var(--smoke);margin-top:5px">Više mejlova odvojiti zarezom</div>
           </div>
 
           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-            <button class="btn" onclick="saveNotifSettings()">Sačuvaj podešavanja</button>
-            <button class="btn btn-sec btn-sm" onclick="sendTestEmail()">📨 Pošalji test mejl</button>
+            <button class="btn" onclick="saveNotifSettings()">Sačuvaj</button>
+            <button class="btn btn-sec btn-sm" onclick="sendTestEmail()">📨 Test mejl</button>
           </div>
           <div id="notifMsg" style="margin-top:12px;font-size:13px"></div>
         </div>
@@ -548,6 +539,7 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── AUTH ──
 const ADMIN_PASS_KEY = 'fm_admin_pass';
+const RESEND_KEY = 're_cKyy8Bfb_GVZ4r7gUb2u2kVXJ7jxCP9ym';
 function getPass() { return localStorage.getItem(ADMIN_PASS_KEY) || 'farma2024'; }
 
 function doLogin() {
@@ -570,26 +562,17 @@ function doLogout() { sessionStorage.removeItem('fm_admin_logged'); location.rel
 // ════════════════════════════════════════
 async function loadNotifSettings() {
   try {
-    const { data } = await db.from('settings').select('key, value').in('key', ['resend_api_key', 'notification_emails']);
-    (data || []).forEach(row => {
-      if (row.key === 'resend_api_key')      document.getElementById('resendKey').value    = row.value || '';
-      if (row.key === 'notification_emails') document.getElementById('notifEmails').value  = row.value || '';
-    });
+    const { data } = await db.from('settings').select('value').eq('key', 'notification_emails').single();
+    document.getElementById('notifEmails').value = data?.value || '';
   } catch(e) {}
 }
 
 async function saveNotifSettings() {
-  const key    = document.getElementById('resendKey').value.trim();
   const emails = document.getElementById('notifEmails').value.trim();
   const msg    = document.getElementById('notifMsg');
-
-  const upserts = [
-    { key: 'notification_emails', value: emails },
-    { key: 'resend_api_key',      value: key }
-  ];
-  const { error } = await db.from('settings').upsert(upserts);
+  const { error } = await db.from('settings').upsert({ key: 'notification_emails', value: emails });
   if (error) { msg.style.color = 'var(--danger-light)'; msg.textContent = 'Greška pri čuvanju.'; return; }
-  msg.style.color = 'var(--success)'; msg.textContent = '✓ Podešavanja sačuvana!';
+  msg.style.color = 'var(--success)'; msg.textContent = '✓ Sačuvano!';
   setTimeout(() => msg.textContent = '', 3000);
 }
 
@@ -618,15 +601,13 @@ async function sendTestEmail() {
 }
 
 async function sendOrderNotification(order) {
-  let apiKey = '', emails = [];
-  try {
-    const { data } = await db.from('settings').select('key, value').in('key', ['resend_api_key', 'notification_emails']);
-    (data || []).forEach(row => {
-      if (row.key === 'resend_api_key')      apiKey = row.value || '';
-      if (row.key === 'notification_emails') emails = (row.value || '').split(',').map(e => e.trim()).filter(Boolean);
-    });
-  } catch(e) {}
+  const apiKey = RESEND_KEY;
   if (!apiKey) return 'no-key';
+  let emails = [];
+  try {
+    const { data } = await db.from('settings').select('value').eq('key', 'notification_emails').single();
+    emails = (data?.value || '').split(',').map(e => e.trim()).filter(Boolean);
+  } catch(e) {}
   if (emails.length === 0) return 'no-emails';
 
   const customer = order.customer || {};
