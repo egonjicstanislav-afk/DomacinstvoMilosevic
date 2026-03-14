@@ -601,8 +601,6 @@ async function sendTestEmail() {
 }
 
 async function sendOrderNotification(order) {
-  const apiKey = RESEND_KEY;
-  if (!apiKey) return 'no-key';
   let emails = [];
   try {
     const { data } = await db.from('settings').select('value').eq('key', 'notification_emails').single();
@@ -660,11 +658,10 @@ async function sendOrderNotification(order) {
   </div>`;
 
   try {
-    const res = await fetch('https://api.resend.com/emails', {
+    const res = await fetch('https://jqrfokkkbrgbtesqscwh.supabase.co/functions/v1/send-notification', {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: 'Farma Milošević <onboarding@resend.dev>',
         to: emails,
         subject: `🌿 Nova narudžbina ${order.id} — ${customer.name || ''}`,
         html
