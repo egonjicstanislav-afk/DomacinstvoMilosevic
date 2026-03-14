@@ -313,7 +313,9 @@
             <option>Mlečni proizvodi</option>
             <option>Med i pčelinj.</option>
             <option>Voće i povrće</option>
-            <option>Prerađevine</option>
+            <option>Proizvodi od mesa</option>
+            <option>Džemovi</option>
+            <option>Sokovi</option>
           </select>
           <select id="invActiveFilter" onchange="renderInventory()" style="background:var(--forest-mid);border:1px solid var(--forest-light);border-left:2px solid var(--green);color:var(--white);padding:10px 14px;font-size:14px;outline:none;font-family:'Source Sans 3',sans-serif;border-radius:0 4px 4px 0;">
             <option value="">Aktivni i neaktivni</option>
@@ -421,7 +423,9 @@
           <option>Mlečni proizvodi</option>
           <option>Med i pčelinj.</option>
           <option>Voće i povrće</option>
-          <option>Prerađevine</option>
+          <option>Proizvodi od mesa</option>
+          <option>Džemovi</option>
+          <option>Sokovi</option>
         </select>
       </div>
       <div class="form-group">
@@ -786,7 +790,7 @@ async function renderSezonski() {
     byCategory[p.category].push(p);
   });
 
-  const CAT_ICONS = { 'Jaja': '🥚', 'Mlečni proizvodi': '🥛', 'Med i pčelinj.': '🍯', 'Voće i povrće': '🌽', 'Prerađevine': '🫙' };
+  const CAT_ICONS = { 'Jaja': '🥚', 'Mlečni proizvodi': '🥛', 'Med i pčelinj.': '🍯', 'Voće i povrće': '🌽', 'Proizvodi od mesa': '🥩', 'Džemovi': '🍓', 'Sokovi': '🧃' };
 
   document.getElementById('sezonskiBody').innerHTML = Object.entries(byCategory).map(([cat, products]) => {
     const activeCount = products.filter(p => p.active).length;

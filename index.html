@@ -265,7 +265,7 @@ const SUPABASE_URL = 'https://jqrfokkkbrgbtesqscwh.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_XkKA_oQtAKRaM7LMy8hAlA_0F8P5sDP';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const CATEGORIES = ['Jaja', 'Mlečni proizvodi', 'Med i pčelinj.', 'Voće i povrće', 'Prerađevine'];
+const CATEGORIES = ['Jaja', 'Mlečni proizvodi', 'Med i pčelinj.', 'Voće i povrće', 'Proizvodi od mesa', 'Džemovi', 'Sokovi'];
 let cachedProducts = [];
 let cachedSlots = [];
 
@@ -398,8 +398,8 @@ function normalize(str) {
 }
 
 let activeCategory = 'Sve';
-const CAT_ICONS = { 'Jaja': '🥚', 'Mlečni proizvodi': '🥛', 'Med i pčelinj.': '🍯', 'Voće i povrće': '🌽', 'Prerađevine': '🫙' };
-const PROD_ICONS = { 'Jaja': '🥚', 'Mlečni proizvodi': '🥛', 'Med i pčelinj.': '🍯', 'Voće i povrće': '🌿', 'Prerađevine': '🫙' };
+const CAT_ICONS = { 'Jaja': '🥚', 'Mlečni proizvodi': '🥛', 'Med i pčelinj.': '🍯', 'Voće i povrće': '🌽', 'Proizvodi od mesa': '🥩', 'Džemovi': '🍓', 'Sokovi': '🧃' };
+const PROD_ICONS = { 'Jaja': '🥚', 'Mlečni proizvodi': '🥛', 'Med i pčelinj.': '🍯', 'Voće i povrće': '🌿', 'Proizvodi od mesa': '🥩', 'Džemovi': '🍓', 'Sokovi': '🧃' };
 
 function renderCategories() {
   document.getElementById('catTabs').innerHTML = ['Sve', ...CATEGORIES].map(c =>

@@ -99,7 +99,7 @@ insert into products (id, name, category, price, unit, stock, description, activ
   ('p7',  'Paradajz (1kg)',             'Voće i povrće',  120,  'kg',   40, 'Domaći paradajz, sazreo na suncu.',                    true),
   ('p8',  'Paprike babure (1kg)',       'Voće i povrće',  100,  'kg',   35, 'Crvene i žute babure, mesnate.',                       false),
   ('p9',  'Jabuke (1kg)',               'Voće i povrće',  90,   'kg',   60, 'Domaće jabuke, mešane sorte.',                         false),
-  ('p10', 'Ajvar ljuti (720ml)',        'Prerađevine',    550,  'teg',  25, 'Domaći ljuti ajvar, pečen i sterilizan.',               true),
-  ('p11', 'Džem od šljiva (400g)',      'Prerađevine',    380,  'teg',  18, 'Džem bez konzervansa, samo šljive i šećer.',            true),
-  ('p12', 'Slanina dimljena (500g)',    'Prerađevine',    900,  'pak',  8,  'Dimljena slanina od domaćeg svinjskog mesa.',           true)
+  ('p10', 'Slanina dimljena (500g)',    'Proizvodi od mesa', 900, 'pak', 8,  'Dimljena slanina od domaćeg svinjskog mesa.',          true),
+  ('p11', 'Džem od šljiva (400g)',      'Džemovi',        380,  'teg',  18, 'Džem bez konzervansa, samo šljive i šećer.',            true),
+  ('p12', 'Sok od jabuke (1L)',         'Sokovi',         280,  'lit',  20, 'Prirodni domaći sok, bez dodatog šećera.',              true)
 on conflict (id) do nothing;
